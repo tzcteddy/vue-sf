@@ -72,7 +72,27 @@ router.post('/uploadFile', async (ctx, next) => {
             };
         });
     });
-    ctx.body=123
 })
-
+router.get('/merge', (ctx) => {
+    let {
+        hash
+    } = req.query;
+ 
+    let path = `${uploadDir}/${hash}`,
+        fileList = fs.readdirSync(path),
+        suffix;
+    fileList.sort((a, b) => {
+        let reg = /_(\d+)/;
+        return reg.exec(a)[1] - reg.exec(b)[1];
+    }).forEach(item => {
+        !suffix ? suffix = /\.([0-9a-zA-Z]+)$/.exec(item)[1] : null;
+        fs.appendFileSync(`${uploadDir}/${hash}.${suffix}`, fs.readFileSync(`${path}/${item}`));
+        fs.unlinkSync(`${path}/${item}`);
+    });
+    fs.rmdirSync(path);
+    ctx.body={
+        code: 0,
+        path: `http://127.0.0.1:${3000}/upload/${hash}.${suffix}`
+    };
+});
 module.exports = router
