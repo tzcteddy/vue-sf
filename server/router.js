@@ -2,57 +2,37 @@ const fs=require('fs')
 const KoaRouter = require('koa-router')
 const router = new KoaRouter();
 
-const multiparty = require("multiparty"),
+const multiparty = require('koa2-multiparty');
     uploadDir = `${__dirname}/upload`;
 
-function handleMultiparty (ctx, temp) {
-    const { req, res } = ctx;
-    return new Promise((resolve, reject) => {
-        // multiparty的配置
-        let options = {
-            maxFieldsSize: 200 * 1024 * 1024
-        };
-        !temp ? options.uploadDir = uploadDir : null;
-        let form = new multiparty.Form(options);
-        // multiparty解析
-        form.parse(req, function (err, fields, files) {
-            if (err) {
-                res.send({
-                    code: 1,
-                    reason: err
-                });
-                reject(err);
-                return;
-            }
-            resolve({
-                fields,
-                files
-            });
-        });
-    });
-}
-router.post('/uploadFile', async (ctx, next) => {
-    let {
-        fields,
-        files
-    } = await handleMultiparty(ctx, true);
-    let [chunk] = files.chunk,
-        [filename] = fields.filename;
+router.post('/uploadFile', multiparty(options = {
+    maxFieldsSize: 200 * 1024 * 1024
+}),async (ctx, next) => {
+    console.log('0')
+    const fields=ctx.req.body;
+    const files=ctx.req.files;
+    console.log('fields',fields)
+    console.log('files',files)
+    let chunk = files.chunk,
+        filename = fields.filename;
     let hash = /([0-9a-zA-Z]+)_\d+/.exec(filename)[1],
         // suffix = /\.([0-9a-zA-Z]+)$/.exec(file.name)[1],
         path = `${uploadDir}/${hash}`;
+        console.log('hash',hash)
     !fs.existsSync(path) ? fs.mkdirSync(path) : null;
     path = `${path}/${filename}`;
+    console.log('1')
     fs.access(path, async err => {
+        console.log('2')
         // 存在的则不再进行任何的处理
         if (!err) {
+            console.log('3')
             ctx.body={
                 code: 0,
                 path: path.replace(__dirname, `http://127.0.0.1:${3000}`)
             };
             return;
         }
-
         // 为了测试出效果，延迟1秒钟
         await new Promise(resolve => {
             setTimeout(_ => {
@@ -65,6 +45,7 @@ router.post('/uploadFile', async (ctx, next) => {
             writeStream = fs.createWriteStream(path);
         readStream.pipe(writeStream);
         readStream.on('end', function () {
+            console.log('3')
             fs.unlinkSync(chunk.path);
            ctx.body={
                 code: 0,
@@ -76,7 +57,7 @@ router.post('/uploadFile', async (ctx, next) => {
 router.get('/merge', (ctx) => {
     let {
         hash
-    } = req.query;
+    } = ctx.query;
  
     let path = `${uploadDir}/${hash}`,
         fileList = fs.readdirSync(path),

@@ -17,6 +17,7 @@
     "koa-bodyparser": "^4.3.0",
     "koa-router": "^9.4.0",
     "koa-static": "^5.0.0",
+    "koa2-multiparty": "^1.0.1",
     "multiparty": "^4.2.2",
     "spark-md5": "^3.0.1",
     "vue": "^2.6.11",
