@@ -34,7 +34,6 @@ module.exports = {
                 },
                 plugins: [...config.plugins,TARGET_NODE ? new VueSSRServerPlugin() : new VueSSRClientPlugin()]
             })
-            console.log(config)
     },
     chainWebpack: config => {
         config.module

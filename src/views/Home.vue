@@ -20,7 +20,8 @@
 				style="position: absolute; left: 0; height: 200px; opacity: 0"
 			/>
 		</div>
-		<p>上传</p>
+		<p @click="clickTest">上传</p>
+        <p><span>上传进度：{{total|totalText}}%</span></p>
 	</div>
 </template>
 
@@ -29,7 +30,22 @@ import { fileParse } from "../utils/utils.js"
 import axios from "axios"
 import SparkMD5 from "spark-md5"
 export default {
-	name: "Home",
+    name: "Home",
+      data() {
+    return {
+      total: 0,
+      video: null,
+      btn: false,
+    };
+  },
+  filters: {
+    btnText(btn) {
+      return btn ? "继续" : "暂停";
+    },
+    totalText(total) {
+      return total > 100 ? 100 : total;
+    },
+  },
 	methods: {
 		async changeFile(event) {
             const files=event.target.files
@@ -130,7 +146,12 @@ export default {
 			//暂停上传
 			this.btn = true
 			this.abort = true
-		}
+        },
+        clickTest(){
+           axios.post("/test").then(res=>{
+               console.log(res)
+           })
+        }
 	}
 }
 </script>

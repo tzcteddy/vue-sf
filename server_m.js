@@ -4,7 +4,10 @@ const path=require('path');
 const Koa=require('koa');
 const koaStatic=require('koa-static');
 const bodyParser = require('koa-bodyparser');
-
+process.on('unhandledRejection', (reason, p) => {
+    console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
+    // application specific logging, throwing an error, or other logic here
+  });
 
 const app=new Koa();
 const router=require('./server/router.js');
@@ -36,7 +39,7 @@ function renderToString(context){
 app.use(bodyParser());
 
 app.use(router.routes()).use(router.allowedMethods())
-app.use(async (ctx)=>{
+app.use(async (ctx,next)=>{
     const context = {
         title: "ssr test",
         url: ctx.url
