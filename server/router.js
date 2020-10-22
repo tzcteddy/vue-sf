@@ -76,4 +76,9 @@ router.get('/merge', (ctx) => {
         path: `http://127.0.0.1:${3000}/upload/${hash}.${suffix}`
     };
 });
+
+
+router.get('/downloadFile',async (ctx)=>{
+    
+})
 module.exports = router

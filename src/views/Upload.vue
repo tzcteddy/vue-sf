@@ -31,7 +31,7 @@ import { fileParse } from "../utils/utils.js"
 import axios from "axios"
 import SparkMD5 from "spark-md5"
 export default {
-    name: "Home",
+    name: "Upload",
       data() {
     return {
       total: 0,
