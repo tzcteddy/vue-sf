@@ -22,6 +22,7 @@
 		</div>
 		<p @click="clickTest">上传</p>
         <p><span>上传进度：{{total|totalText}}%</span></p>
+        <p><button type="button" v-if="total>0 && total<100" @click="handleBtn">{{btn|btnText}}</button></p>
 	</div>
 </template>
 
