@@ -51,15 +51,16 @@ export default {
 		async changeFile(event) {
             const files=event.target.files
 			if (files.length<=0) return
-            const file=files[0]
-            console.log(file)
+            const file=files[0];
+            this.type=file.type;
+            this.fileName=file.name;
 			// 解析为BUFFER数据
 			// 我们会把文件切片处理：把一个文件分割成为好几个部分（固定数量/固定大小）
 			// 每一个切片有自己的部分数据和自己的名字
 			// HASH_1.mp4
 			// HASH_2.mp4
 			// ...
-			let buffer = await fileParse(file, "buffer"),
+            let buffer = await fileParse(file, "buffer"),
 				spark = new SparkMD5.ArrayBuffer(),
 				hash,
 				suffix
@@ -80,8 +81,9 @@ export default {
 				partList.push(item)
 			}
 
-			this.partList = partList
-			this.hash = hash
+            this.partList = partList;
+            this.hash = hash;
+            this.suffix=suffix;
 			this.sendRequest()
 		},
 		async sendRequest() {
@@ -117,7 +119,11 @@ export default {
 						hash: this.hash
 					}
 				})
-				result = result.data
+                result = result.data
+                localStorage.setItem('hash',this.hash)
+                localStorage.setItem('suffix',this.suffix)
+                localStorage.setItem('type',this.suffix)
+                localStorage.setItem('fileName',this.fileName)
 				if (result.code == 0) {
 					this.video = result.path
 				}

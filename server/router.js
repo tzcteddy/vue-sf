@@ -77,8 +77,33 @@ router.get('/merge', (ctx) => {
     };
 });
 
-
-router.get('/downloadFile',async (ctx)=>{
-    
+router.get('/downloadFile', async(ctx) => {
+    const { hash,suffix } = ctx.query;
+    let path = `${uploadDir}/${hash}`;
+    const { size } = fs.statSync(path+'.'+suffix);
+    const range = ctx.headers['range'];
+    if (!range) { 
+        ctx.set('Accept-Ranges', 'bytes');
+        ctx.body = size//fs.readFileSync(path+'.mp4');
+        return;
+    }
+    const { start, end } = getRange(range);
+    if (start >= size || end >= size) {
+        ctx.response.status = 416;
+        ctx.body = '';
+        return;
+    }
+    ctx.response.status = 206;
+    ctx.set('Accept-Ranges', 'bytes');
+    ctx.set('Content-Range', `bytes ${start}-${end ? end : size - 1}/${size}`);
+    ctx.body = fs.createReadStream(path+'.'+suffix, { start, end });
 })
+function getRange(range){
+    let start,end;
+    let rangeReg=/=(\d+)-(\d+)/;
+    let regResult=rangeReg.exec(range);
+    start=Number(regResult[1]);
+    end=Number(regResult[2]);
+    return{start,end}
+}
 module.exports = router
