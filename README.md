@@ -1,5 +1,5 @@
 # vue-sf
-SSR应用 | [大文件上传](./READUP.md) | [大文件下载](./README-zh.md)
+SSR应用 | [大文件上传](./READUP.md) | [大文件下载](./READDOWN.md)
 
 **运行**
 ```
