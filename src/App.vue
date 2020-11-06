@@ -1,10 +1,6 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Upload</router-link> |
-      <router-link to="/download">Donwload</router-link>
-    </div>
-    <router-view/>
+    <router-view />
   </div>
 </template>
 
